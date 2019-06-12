@@ -1,5 +1,6 @@
 package com.krego.farmacy.controller;
 
+import com.krego.farmacy.exception.BadRequestException;
 import com.krego.farmacy.exception.ResourceNotFoundException;
 import com.krego.farmacy.model.Manufacturer;
 import com.krego.farmacy.repositories.ManufacturerRepository;
@@ -39,6 +40,10 @@ public class ManufacturerController {
     @ResponseBody
     @PreAuthorize("hasRole('USER')")
     public Manufacturer createManufacturer(@Valid @RequestBody Manufacturer manufacturer) {
+        boolean ifExists = manufacturerRepository.existsById(manufacturer.getCode());
+        if(ifExists) {
+            throw new BadRequestException("Manufacturer with this code already exists");
+        }
         return manufacturerRepository.save(manufacturer);
     }
 

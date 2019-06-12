@@ -1,5 +1,6 @@
 package com.krego.farmacy.controller;
 
+import com.krego.farmacy.exception.BadRequestException;
 import com.krego.farmacy.exception.ResourceNotFoundException;
 import com.krego.farmacy.model.Drugstore;
 import com.krego.farmacy.model.Medicine;
@@ -98,6 +99,11 @@ public class SoldInPeriodController {
     public SoldInPeriod createSoldInPeriod(@RequestParam("drugstoreCode") Long drugstoreCode,
                                            @RequestParam("medicineCode") Long medicineCode,
                                            @Valid @RequestBody SoldInPeriod soldInPeriod) {
+        boolean ifExists = soldInPeriodRepository.existsById(soldInPeriod.getSoldId());
+        if(ifExists) {
+            throw new BadRequestException("Sold with this code already exists");
+        }
+
         Drugstore parentDrugstore = drugstoreRepository.findById(drugstoreCode)
                 .orElseThrow(() -> new ResourceNotFoundException("Drugstore", "drugstoreCode", drugstoreCode));
         Medicine parentMedicine = medicineRepository.findById(medicineCode)
