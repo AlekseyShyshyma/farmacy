@@ -167,7 +167,7 @@ class Signup extends Component {
                                 name="address"
                                 type="text"
                                 autoComplete="off"
-                                placeholder="Your patronymic"
+                                placeholder="Your email"
                                 value={this.state.address.value}
                                 onChange={(event) => this.handleInputChange(event, this.validateString)} />
                         </FormItem>

@@ -110,50 +110,6 @@ class AddSoldInPeriodForm extends Component {
                     <Row>
                         <Col span={12}>
                             <FormItem>
-                                {getFieldDecorator('amount', {
-                                    rules: [{ required: true, message: 'Please input amount!' }],
-                                })(
-                                    <Input
-                                        prefix={<Icon type="lock" />}
-                                        size="large"
-                                        name="amount"
-                                        type="number"
-                                        placeholder="Amount"  />
-                                )}
-                            </FormItem>
-                        </Col>
-                        <Col span={12}>
-                            <FormItem>
-                                {getFieldDecorator('periodStart', {
-                                    rules: [{ required: true, message: 'Please input period start!' }],
-                                })(
-                                    <Input
-                                        prefix={<Icon type="lock" />}
-                                        size="large"
-                                        name="periodStart"
-                                        type="text"
-                                        placeholder="Period Start"  />
-                                )}
-                            </FormItem>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col span={8}>
-                            <FormItem>
-                                {getFieldDecorator('periodEnd', {
-                                    rules: [{ required: true, message: 'Please input period end!' }],
-                                })(
-                                    <Input
-                                        prefix={<Icon type="lock" />}
-                                        size="large"
-                                        name="periodEnd"
-                                        type="text"
-                                        placeholder="Period End"  />
-                                )}
-                            </FormItem>
-                        </Col>
-                        <Col span={8}>
-                            <FormItem>
                                 {getFieldDecorator('drugstoreCode', {
                                     rules: [{ required: true, message: 'Please input drugstore code!' }],
                                 })(
@@ -172,7 +128,7 @@ class AddSoldInPeriodForm extends Component {
                                 )}
                             </FormItem>
                         </Col>
-                        <Col span={8}>
+                        <Col span={12}>
                             <FormItem>
                                 {getFieldDecorator('medicineCode', {
                                     rules: [{ required: true, message: 'Please input medicine code!' }],
@@ -189,6 +145,50 @@ class AddSoldInPeriodForm extends Component {
                                             <Option key={medicine.title} value={medicine.medicineCode}>{medicine.title}</Option>
                                         )}
                                     </Select>
+                                )}
+                            </FormItem>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col span={8}>
+                            <FormItem>
+                                {getFieldDecorator('amount', {
+                                    rules: [{ required: true, message: 'Please input amount!' }],
+                                })(
+                                    <Input
+                                        prefix={<Icon type="lock" />}
+                                        size="large"
+                                        name="amount"
+                                        type="number"
+                                        placeholder="Amount"  />
+                                )}
+                            </FormItem>
+                        </Col>
+                        <Col span={8}>
+                            <FormItem>
+                                {getFieldDecorator('periodStart', {
+                                    rules: [{ required: true, message: 'Please input period start!' }],
+                                })(
+                                    <Input
+                                        prefix={<Icon type="lock" />}
+                                        size="large"
+                                        name="periodStart"
+                                        type="text"
+                                        placeholder="Period Start"  />
+                                )}
+                            </FormItem>
+                        </Col>
+                        <Col span={8}>
+                            <FormItem>
+                                {getFieldDecorator('periodEnd', {
+                                    rules: [{ required: true, message: 'Please input period end!' }],
+                                })(
+                                    <Input
+                                        prefix={<Icon type="lock" />}
+                                        size="large"
+                                        name="periodEnd"
+                                        type="text"
+                                        placeholder="Period End"  />
                                 )}
                             </FormItem>
                         </Col>

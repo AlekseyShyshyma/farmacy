@@ -67,7 +67,7 @@ class LoginForm extends Component {
                             prefix={<Icon type="user" />}
                             size="large"
                             name="login"
-                            placeholder="Username or Email" />
+                            placeholder="Manager Code" />
                     )}
                 </FormItem>
                 <FormItem>
