@@ -24,6 +24,11 @@ class AppHeader extends Component {
         let menuItems;
         if(this.props.currentUser) {
             menuItems = [
+                <Menu.Item key="/poll/download">
+                    <Link to="/download">
+                        <Icon type="download" />
+                    </Link>
+                </Menu.Item>,
                 <Menu.Item key="/poll/new">
                     <Link to="/upload">
                         <img src={pollIcon} alt="poll" className="poll-icon" />

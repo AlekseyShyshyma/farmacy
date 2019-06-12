@@ -128,9 +128,6 @@ class UploadPage extends Component {
                         </div>
                     </Col>
                 </Row>
-                <div>
-                    <NonEditableTable className="table" numberColumns={numberColumns} textColumns={textColumns} loadedDrugstores={this.state.uploadedSolds} isSold={true}/>
-                </div>
             </div>
         );
     }

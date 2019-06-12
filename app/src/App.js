@@ -5,6 +5,7 @@ import { Route, withRouter, Switch } from 'react-router-dom';
 import { getCurrentUser } from "./apiUtils";
 import { Layout, notification } from 'antd';
 import LoginPage from './pages/LoginPage';
+import DownloadPage from './pages/DownloadPage';
 import SignUp from './pages/SignUpPage';
 import UploadPage from './pages/UploadPage';
 import AppHeader from './components/AppHeader';
@@ -106,6 +107,9 @@ class App extends Component {
                 </Route>
                 <Route path="/upload"
                        render={(props) => <UploadPage {...props} />}>
+                </Route>
+                <Route path="/download"
+                       render={(props) => <DownloadPage {...props} />}>
                 </Route>
               </Switch>
             </div>
