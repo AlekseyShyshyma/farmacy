@@ -76,6 +76,7 @@ public class SoldInPeriodController {
     //@PreAuthorize("hasRole('USER')")
     public List<SoldInPeriod> uploadSoldInPeriod(@RequestParam("file") MultipartFile file) throws Exception{
 
+        System.out.println("File url " + file.getOriginalFilename());
         String fileName = fileStorageService.storeFile(file);
 
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -195,20 +196,26 @@ public class SoldInPeriodController {
             Row row = it.next();
             Iterator<Cell> cells = row.iterator();
 
+
             Cell cell = cells.next();
             Long soldId = (long) (cell.getNumericCellValue());
 
+            System.out.println("Code " + soldId);
             cell = cells.next();
             Integer amount = (int) (cell.getNumericCellValue());
+            System.out.println("Amount " + amount);
 
             cell = cells.next();
             Double sum = (double) (cell.getNumericCellValue());
+            System.out.println("Sum " + sum);
 
             cell = cells.next();
             Long drugstoreCode = (long) (cell.getNumericCellValue());
 
+            System.out.println("Drugstore Code " + drugstoreCode);
             cell = cells.next();
             Long medicineCode = (long) (cell.getNumericCellValue());
+            System.out.println("Medicine Code " + medicineCode);
 
             SoldInPeriod soldInPeriod = new SoldInPeriod(soldId, startDate, endDate, sum, amount);
 
