@@ -9,6 +9,7 @@ import com.krego.farmacy.model.SoldInPeriod;
 import com.krego.farmacy.repositories.DrugstoreRepository;
 import com.krego.farmacy.repositories.ManagerRepository;
 import com.krego.farmacy.upload.FileStorageService;
+import lombok.Setter;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -33,13 +34,13 @@ import java.util.List;
 @RequestMapping("/api/drugstore")
 public class DrugstoreController {
 
-    @Autowired
+    @Setter(onMethod_ = @Autowired)
     DrugstoreRepository drugstoreRepository;
 
-    @Autowired
+    @Setter(onMethod_ = @Autowired)
     ManagerRepository managerRepository;
 
-    @Autowired
+    @Setter(onMethod_ = @Autowired)
     private FileStorageService fileStorageService;
 
     //GET mappings

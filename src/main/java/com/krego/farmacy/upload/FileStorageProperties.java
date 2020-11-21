@@ -1,18 +1,17 @@
 package com.krego.farmacy.upload;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix="file")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class FileStorageProperties {
 
     private String uploadDir;
-
-    public String getUploadDir() {
-        return uploadDir;
-    }
-
-    public void setUploadDir(String uploadDir) {
-        this.uploadDir = uploadDir;
-    }
-
 }

@@ -1,5 +1,6 @@
 package com.krego.farmacy.helpers;
 
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,10 +28,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 )
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
+    @Setter(onMethod_ = @Autowired)
     CustomUserDetailsService customUserDetailsService;
 
-    @Autowired
+    @Setter(onMethod_ = @Autowired)
     private JwtAuthenticationEntryPoint unauthorizedHandler;
 
     @Bean

@@ -1,17 +1,15 @@
 package com.krego.farmacy.payloads;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class ManagerCodeAvailability {
+
     private Boolean available;
-
-    public ManagerCodeAvailability(Boolean available) {
-        this.available = available;
-    }
-
-    public Boolean getAvailable() {
-        return available;
-    }
-
-    public void setAvailable(Boolean available) {
-        this.available = available;
-    }
 }

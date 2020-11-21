@@ -11,6 +11,7 @@ import com.krego.farmacy.repositories.ManagerRepository;
 import com.krego.farmacy.repositories.RoleRepository;
 import com.krego.farmacy.responses.ApiResponse;
 import com.krego.farmacy.responses.JwtAuthenticationResponse;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,19 +34,19 @@ import java.util.Optional;
 @RequestMapping("/api/manager")
 public class ManagerController {
 
-    @Autowired
+    @Setter(onMethod_ = @Autowired)
     ManagerRepository managerRepository;
 
-    @Autowired
+    @Setter(onMethod_ = @Autowired)
     AuthenticationManager authenticationManager;
 
-    @Autowired
+    @Setter(onMethod_ = @Autowired)
     RoleRepository roleRepository;
 
-    @Autowired
+    @Setter(onMethod_ = @Autowired)
     PasswordEncoder passwordEncoder;
 
-    @Autowired
+    @Setter(onMethod_ = @Autowired)
     JwtTokenProvider tokenProvider;
 
     //GET mappings

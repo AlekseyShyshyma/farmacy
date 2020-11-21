@@ -4,6 +4,7 @@ import com.krego.farmacy.exception.BadRequestException;
 import com.krego.farmacy.exception.ResourceNotFoundException;
 import com.krego.farmacy.model.Manufacturer;
 import com.krego.farmacy.repositories.ManufacturerRepository;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,7 +17,7 @@ import java.util.List;
 @RequestMapping("/api/manufacturer")
 public class ManufacturerController {
 
-    @Autowired
+    @Setter(onMethod_ = @Autowired)
     ManufacturerRepository manufacturerRepository;
 
     //GET mappings
