@@ -2,20 +2,14 @@ package com.krego.farmacy.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
+import lombok.*;
 import javax.persistence.*;
-import java.util.HashSet;
 import java.util.Set;
 
-@Data
 @NoArgsConstructor
-@RequiredArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "drugstore")
 public class Drugstore {
