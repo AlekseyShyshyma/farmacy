@@ -3,6 +3,7 @@ package com.krego.farmacy.services.importing.parsers;
 import com.krego.farmacy.services.importing.dtos.DrugstoreDto;
 import com.krego.farmacy.utils.PoiUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -14,11 +15,12 @@ import java.util.*;
 
 
 /**
- * Generally, need for parsing from excel format files and for
+ * Generally, need for parsing from excel format files,
+ * which contains drugstore data
  **/
 @Slf4j
 @Service("drugstoreParser")
-public class DrugStoreParserService implements Parser<DrugstoreDto> {
+public class DrugstoreParserService implements Parser<DrugstoreDto> {
 
     private static final int HEADER_ROW_INDEX = 0;
     private static final int CONTENT_ROW_START_POSITION = 1;
@@ -33,14 +35,15 @@ public class DrugStoreParserService implements Parser<DrugstoreDto> {
     @Override
     public Optional<List<DrugstoreDto>> parse(InputStream inputStream) throws IOException {
 
+        log.debug("Starting to parse excel data for drugstore...");
         XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
         XSSFSheet sheet = workbook.getSheetAt(EXCEL_SHEET_INDEX);
         XSSFRow row = sheet.getRow(HEADER_ROW_INDEX);
+        List<DrugstoreDto> drugstores = new ArrayList<>();
 
         Map<String, Integer> headersFromFileMap = PoiUtils.getCellsContent(row);
         if (verifyHeader(headersFromFileMap, headerRequirements)) {
 
-            List<DrugstoreDto> drugstores = new ArrayList<>();
             int currentRowIndex = CONTENT_ROW_START_POSITION;
             while (Objects.nonNull(sheet.getRow(currentRowIndex))) {
 
@@ -54,8 +57,16 @@ public class DrugStoreParserService implements Parser<DrugstoreDto> {
                 //if all data is present
                 if (fromRowMap.size() >= headerRequirements.size()) {
 
+                   boolean isNumberCorrect = NumberUtils.isCreatable(fromRowMap.get("Drugstore code"))
+                   && NumberUtils.isCreatable(fromRowMap.get("Manager code"));
+                   if(!isNumberCorrect) {
+                       currentRowIndex++;
+                       continue;
+                   }
+
                     Double drugstoreCode = Double.parseDouble(fromRowMap.get("Drugstore code"));
                     Double managerCode = Double.parseDouble(fromRowMap.get("Manager code"));
+
                     String address = fromRowMap.get("Address");
                     String networkTitle = fromRowMap.get("Network title");
                     String phoneNumber = fromRowMap.get("Phone number");
@@ -74,10 +85,9 @@ public class DrugStoreParserService implements Parser<DrugstoreDto> {
                 }
                 currentRowIndex++;
             }
-            return Optional.ofNullable(drugstores);
         }
 
-        return Optional.empty();
+        return Optional.ofNullable(drugstores);
     }
 
 }

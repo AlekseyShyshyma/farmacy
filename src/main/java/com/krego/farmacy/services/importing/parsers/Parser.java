@@ -10,6 +10,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Classes, which implement this interface must parsing excel files
+ */
 public interface Parser<M> {
 
     Optional<List<M>> parse(InputStream inputStream) throws IOException;
