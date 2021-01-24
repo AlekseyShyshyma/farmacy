@@ -1,19 +1,17 @@
 package com.khpi.farmacy.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
-@Data
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "medicine")
 public class Medicine {
@@ -38,13 +36,13 @@ public class Medicine {
     @JsonIgnore
     @OneToMany(mappedBy = "medicine")
     @Nullable
-    private Set<SoldInPeriod> soldInPeriods;
+    private List<SoldInPeriod> soldInPeriods;
 
     @JsonIgnore
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "sold_in_period",
             joinColumns = @JoinColumn(name="medicine_code"),
             inverseJoinColumns = @JoinColumn(name = "drugstore_code"))
-    private Set<Medicine> drugstores = new HashSet<>();
+    private List<Drugstore> drugstores = new ArrayList<>();
 
 }

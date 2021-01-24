@@ -1,16 +1,17 @@
 package com.khpi.farmacy.controller;
 
+import com.khpi.farmacy.dtos.SoldInPeriodDto;
 import com.khpi.farmacy.exception.ResourceNotFoundException;
+import com.khpi.farmacy.mappers.SoldInPeriodMapper;
 import com.khpi.farmacy.model.Drugstore;
 import com.khpi.farmacy.model.SoldInPeriod;
-import com.khpi.farmacy.upload.FileStorageService;
 import com.khpi.farmacy.exception.BadRequestException;
 import com.khpi.farmacy.model.Medicine;
 import com.khpi.farmacy.repositories.DrugstoreRepository;
 import com.khpi.farmacy.repositories.MedicineRepository;
 import com.khpi.farmacy.repositories.SoldInPeriodRepository;
+import com.khpi.farmacy.services.excel.importation.ParsingStrategyStorageService;
 import lombok.Setter;
-import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,17 +19,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.Date;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/sold")
@@ -44,7 +38,10 @@ public class SoldInPeriodController {
     MedicineRepository medicineRepository;
 
     @Setter(onMethod_ = @Autowired)
-    private FileStorageService fileStorageService;
+    private SoldInPeriodMapper soldInPeriodMapper;
+
+    @Setter(onMethod_ = @Autowired)
+    private ParsingStrategyStorageService parsingStrategyStorageService;
 
     //GET mappings
     @GetMapping("/get")
@@ -71,27 +68,19 @@ public class SoldInPeriodController {
         return soldInPeriodRepository.findAll();
     }
 
-    //POST mappings
+
     @PostMapping("/upload")
-    //@PreAuthorize("hasRole('USER')")
-    public List<SoldInPeriod> uploadSoldInPeriod(@RequestParam("file") MultipartFile file) throws Exception{
+    public List<SoldInPeriod> uploadSoldInPeriod
+            (@RequestParam("file") MultipartFile file) throws Exception{
 
-        System.out.println("File url " + file.getOriginalFilename());
-        String fileName = fileStorageService.storeFile(file);
+        List<SoldInPeriod> soldInPeriods = parsingStrategyStorageService.parse(
+                file.getInputStream(), SoldInPeriodDto.class)
+                .stream()
+                .map(soldInPeriodMapper::map)
+                .collect(Collectors.toList());
+        soldInPeriodRepository.saveAll(soldInPeriods);
 
-        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/download/")
-                .path(fileName)
-                .toUriString();
-
-
-        ArrayList<SoldInPeriod> solds = parse(fileName);
-
-        for(SoldInPeriod sold : solds) {
-            soldInPeriodRepository.save(sold);
-        }
-
-        return solds;
+        return soldInPeriods;
     }
 
     @PostMapping("/new")
@@ -147,88 +136,5 @@ public class SoldInPeriodController {
 
         return ResponseEntity.ok().build();
 
-    }
-
-    public ArrayList<SoldInPeriod> parse(String name) throws Exception{
-
-
-        char[] periodStart = new char[10];
-        char[] periodEnd = new char[10];
-
-        for(int i = 0; i < name.length(); i++) {
-            if(name.charAt(i) == '_') {
-                name.getChars(++i, i+10, periodStart, 0);
-                i+=11;
-                name.getChars(i, i+10, periodEnd, 0);
-                break;
-            }
-        }
-
-        InputStream in = null;
-        Workbook wb = null;
-        try {
-            in = new FileInputStream("uploads/" + name);
-            wb = WorkbookFactory.create(in);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        String startPeriod = new String(periodStart);
-        String endPeriod = new String(periodEnd);
-
-        System.out.println(startPeriod);
-        System.out.println(endPeriod);
-
-        Sheet sheet = wb.getSheetAt(0);
-        Iterator<Row> it = sheet.iterator();
-
-        ArrayList<SoldInPeriod> soldInPeriods = new ArrayList<>();
-
-        SimpleDateFormat sdf1 = new SimpleDateFormat("dd-MM-yyyy");
-        java.util.Date date = sdf1.parse(startPeriod);
-
-        Date startDate = new Date(date.getTime());
-
-        date = sdf1.parse(endPeriod);
-        Date endDate = new Date(date.getTime());
-
-        while (it.hasNext()) {
-            Row row = it.next();
-            Iterator<Cell> cells = row.iterator();
-
-
-            Cell cell = cells.next();
-            Long soldId = (long) (cell.getNumericCellValue());
-
-            System.out.println("Code " + soldId);
-            cell = cells.next();
-            Integer amount = (int) (cell.getNumericCellValue());
-            System.out.println("Amount " + amount);
-
-            cell = cells.next();
-            Double sum = (double) (cell.getNumericCellValue());
-            System.out.println("Sum " + sum);
-
-            cell = cells.next();
-            Long drugstoreCode = (long) (cell.getNumericCellValue());
-
-            System.out.println("Drugstore Code " + drugstoreCode);
-            cell = cells.next();
-            Long medicineCode = (long) (cell.getNumericCellValue());
-            System.out.println("Medicine Code " + medicineCode);
-
-            SoldInPeriod soldInPeriod = new SoldInPeriod(soldId, startDate, endDate, sum, amount);
-
-            Drugstore parentDrugstore = drugstoreRepository.findById(drugstoreCode)
-                    .orElseThrow(() -> new ResourceNotFoundException("Drugstore", "drugstoreCode", drugstoreCode));
-            Medicine parentMedicine = medicineRepository.findById(medicineCode)
-                    .orElseThrow(() -> new ResourceNotFoundException("Medicine", "medicineCode", medicineCode));
-            soldInPeriod.setDrugstore(parentDrugstore);
-            soldInPeriod.setMedicine(parentMedicine);
-
-            soldInPeriods.add(soldInPeriod);
-        }
-
-        return soldInPeriods;
     }
 }

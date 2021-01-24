@@ -4,12 +4,13 @@ package com.khpi.farmacy.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import javax.persistence.*;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "drugstore")
 public class Drugstore {
@@ -33,6 +34,9 @@ public class Drugstore {
 
     @JsonIgnore
     @OneToMany(mappedBy = "drugstore")
-    private Set<SoldInPeriod> soldInPeriods;
+    private List<SoldInPeriod> soldInPeriods;
+
+    @ManyToMany(mappedBy = "drugstores")
+    private List<Medicine> medicines = new ArrayList<>();
 
 }

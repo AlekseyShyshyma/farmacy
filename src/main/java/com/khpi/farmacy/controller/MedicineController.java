@@ -1,93 +1,101 @@
 package com.khpi.farmacy.controller;
 
+import com.khpi.farmacy.dtos.MedicineDto;
 import com.khpi.farmacy.exception.BadRequestException;
 import com.khpi.farmacy.exception.ResourceNotFoundException;
-import com.khpi.farmacy.model.Manufacturer;
+import com.khpi.farmacy.mappers.MedicineMapper;
 import com.khpi.farmacy.model.Medicine;
-import com.khpi.farmacy.repositories.DrugstoreRepository;
 import com.khpi.farmacy.repositories.ManufacturerRepository;
 import com.khpi.farmacy.repositories.MedicineRepository;
-import com.khpi.farmacy.upload.FileStorageService;
+import com.khpi.farmacy.services.excel.importation.ParsingStrategyStorageService;
 import lombok.Setter;
-import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
-@RestController
+@Controller
 @RequestMapping("/api/medicine")
 public class MedicineController {
-    
-    @Setter(onMethod_ = @Autowired)
-    MedicineRepository medicineRepository;
 
     @Setter(onMethod_ = @Autowired)
-    ManufacturerRepository manufacturerRepository;
+    private MedicineRepository medicineRepository;
 
     @Setter(onMethod_ = @Autowired)
-    DrugstoreRepository drugstoreRepository;
+    private MedicineMapper medicineMapper;
 
     @Setter(onMethod_ = @Autowired)
-    private FileStorageService fileStorageService;
+    private ManufacturerRepository manufacturerRepository;
 
-    //GET mappings
-    @GetMapping("/get")
-    @ResponseBody
+    @Setter(onMethod_ = @Autowired)
+    private ParsingStrategyStorageService parsingStrategyStorageService;
+
+
+    @GetMapping("/all")
     @PreAuthorize("hasRole('USER')")
-    public Medicine getMedicineById(@RequestParam("medicineCode") Long medicineId) {
-        return medicineRepository.findById(medicineId)
-                .orElseThrow(() -> new ResourceNotFoundException("Medicine", "id", medicineId));
+    public ResponseEntity<List<Medicine>> getAllMedicines() {
+        return new ResponseEntity<>(medicineRepository.findAll(),
+                HttpStatus.OK);
     }
+
+
+    @GetMapping("/get")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<Medicine> getMedicineById(@RequestParam("medicineCode") Long medicineId) {
+        Medicine medicine = medicineRepository.findById(medicineId)
+                .orElseThrow(() -> new ResourceNotFoundException("Medicine",
+                        "id", medicineId));
+
+        return new ResponseEntity<>(medicine, HttpStatus.OK);
+    }
+
 
     @GetMapping("/manager")
     @ResponseBody
     @PreAuthorize("hasRole('USER')")
-    public Page<Medicine> getMedicineByManagerCode(@RequestParam("managerCode") Long managerCode, Pageable pageable) {
-        return medicineRepository.findByManagerCode(managerCode, pageable);
+    public ResponseEntity<Page<Medicine>> getMedicineByManagerCode(@RequestParam("managerCode") Long managerCode,
+                                                   Pageable pageable) {
+
+        return new ResponseEntity<>(medicineRepository.findByManagerCode(
+                managerCode, pageable),
+                HttpStatus.OK);
     }
 
-    @GetMapping("/all")
-    @ResponseBody
-    @PreAuthorize("hasRole('USER')")
-    public List<Medicine> getAllMedicines() {
-        return medicineRepository.findAll();
-    }
 
-    //POST mappings
     @PostMapping("/new")
-    @ResponseBody
     @PreAuthorize("hasRole('USER')")
-    public Medicine createMedicine(@RequestParam("manufacturerCode") Long manufacturerCode,
+    public ResponseEntity<Medicine> createMedicine(@RequestParam("manufacturerCode") Long manufacturerCode,
                                    @Valid @RequestBody Medicine medicine) {
+
         boolean ifExists = medicineRepository.existsById(medicine.getMedicineCode());
-        if(ifExists) {
+        if (ifExists) {
             throw new BadRequestException("Medicine with this code already exists");
         }
-        return manufacturerRepository.findById(manufacturerCode).map(manufacturer -> {
+
+        Medicine medicine1 = manufacturerRepository.findById(manufacturerCode).map(manufacturer -> {
             medicine.setManufacturer(manufacturer);
             return medicineRepository.save(medicine);
-        }).orElseThrow(() -> new ResourceNotFoundException("Manufacturer", "manufacturerCode", manufacturerCode));
+        }).orElseThrow(() -> new ResourceNotFoundException("Manufacturer",
+                "manufacturerCode", manufacturerCode));
+
+        return new ResponseEntity<>(medicine1, HttpStatus.OK);
     }
 
-    //PUT mappings
+
     @PutMapping("/update")
-    @ResponseBody
     @PreAuthorize("hasRole('USER')")
-    public Medicine updateMedicineById(@RequestParam("medicineCode") Long medicineId,
-                                               @Valid @RequestBody Medicine medicineDetails) {
+    public ResponseEntity<Medicine> updateMedicineById(@RequestParam("medicineCode") Long medicineId,
+                                                       @Valid @RequestBody Medicine medicineDetails) {
+
         Medicine medicine = medicineRepository.findById(medicineId)
                 .orElseThrow(() -> new ResourceNotFoundException("Medicine", "id", medicineId));
 
@@ -96,96 +104,36 @@ public class MedicineController {
         medicine.setMeasurementUnit(medicineDetails.getMeasurementUnit());
         medicine.setPrice(medicineDetails.getPrice());
 
-        return medicineRepository.save(medicine);
-
+        medicineRepository.save(medicine);
+        return new ResponseEntity<>(medicine, HttpStatus.OK);
     }
 
+
     @DeleteMapping("/delete")
-    @ResponseBody
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> deleteMedicine(@RequestParam("medicineCode") Long medicineId) {
 
         Medicine medicine = medicineRepository.findById(medicineId)
                 .orElseThrow(() -> new ResourceNotFoundException("Medicine", "id", medicineId));
-
         medicineRepository.delete(medicine);
 
         return ResponseEntity.ok().build();
 
     }
 
+
     @PostMapping("/upload")
-    public List<Medicine> uploadMedicines(@RequestParam("file") MultipartFile file) throws Exception{
+    public ResponseEntity<List<Medicine>> uploadMedicines(
+            @RequestParam("file") MultipartFile file) throws Exception {
 
-        String fileName = fileStorageService.storeFile(file);
+        List<Medicine> medicines = parsingStrategyStorageService.parse(
+                file.getInputStream(), MedicineDto.class)
+                .stream()
+                .map(medicineMapper::map)
+                .collect(Collectors.toList());
+        medicineRepository.saveAll(medicines);
 
-        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/download/")
-                .path(fileName)
-                .toUriString();
-
-
-        ArrayList<Medicine> medicines = parse(fileName);
-
-        for(Medicine sold : medicines) {
-            medicineRepository.save(sold);
-        }
-
-        return medicines;
+        return new ResponseEntity<>(medicines, HttpStatus.OK);
     }
 
-    public ArrayList<Medicine> parse(String name) throws Exception{
-
-        InputStream in = null;
-        Workbook wb = null;
-        try {
-            in = new FileInputStream("uploads/" + name);
-            wb = WorkbookFactory.create(in);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        Sheet sheet = wb.getSheetAt(0);
-        Iterator<Row> it = sheet.iterator();
-
-        ArrayList<Medicine> medicines = new ArrayList<>();
-
-        while (it.hasNext()) {
-            Row row = it.next();
-            Iterator<Cell> cells = row.iterator();
-
-            Cell cell = cells.next();
-            Long medicineCode = (long) (cell.getNumericCellValue());
-
-            cell = cells.next();
-            Double price = cell.getNumericCellValue();
-
-            cell = cells.next();
-            String title = cell.getStringCellValue();
-
-            cell = cells.next();
-            String term = cell.getStringCellValue();
-
-            cell = cells.next();
-            String measurmentUnit = cell.getStringCellValue();
-
-            cell = cells.next();
-            Long manufacturerCode = (long) cell.getNumericCellValue();
-
-            Manufacturer manufacturer = manufacturerRepository.findById(manufacturerCode)
-                    .orElseThrow(() -> new ResourceNotFoundException("Manufacturer", "manufacturerCode", manufacturerCode));
-
-            Medicine medicine = new Medicine();
-            medicine.setMedicineCode(medicineCode);
-            medicine.setPrice(price);
-            medicine.setTitle(title);
-            medicine.setExpirationTerm(term);
-            medicine.setMeasurementUnit(measurmentUnit);
-            medicine.setManufacturer(manufacturer);
-
-            medicines.add(medicine);
-        }
-
-        return medicines;
-    }
 }

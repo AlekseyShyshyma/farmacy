@@ -1,16 +1,15 @@
 package com.khpi.farmacy.controller;
 
+import com.khpi.farmacy.dtos.DrugstoreDto;
 import com.khpi.farmacy.exception.ResourceNotFoundException;
 import com.khpi.farmacy.mappers.DrugstoreMapper;
 import com.khpi.farmacy.model.Drugstore;
-import com.khpi.farmacy.services.excel.importation.parsers.AbstractParser;
 import com.khpi.farmacy.exception.BadRequestException;
 import com.khpi.farmacy.repositories.DrugstoreRepository;
 import com.khpi.farmacy.repositories.ManagerRepository;
-import com.khpi.farmacy.services.excel.importation.dtos.DrugstoreDto;
+import com.khpi.farmacy.services.excel.importation.ParsingStrategyStorageService;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -35,10 +34,10 @@ public class DrugstoreController {
     @Setter(onMethod_ = @Autowired)
     private DrugstoreMapper drugstoreMapper;
 
-    @Setter(onMethod_ = {@Autowired, @Qualifier("drugstoreParser")})
-    private AbstractParser<DrugstoreDto> parser;
+    @Setter(onMethod_ = @Autowired)
+    private ParsingStrategyStorageService parsingStrategyStorageService;
 
-    //GET mappings
+
     @GetMapping("/get")
     @ResponseBody
     @PreAuthorize("hasRole('USER')")
@@ -54,6 +53,7 @@ public class DrugstoreController {
         return drugstoreRepository.findAll();
     }
 
+
     @GetMapping("/manager")
     @ResponseBody
     @PreAuthorize("hasRole('USER')")
@@ -63,7 +63,7 @@ public class DrugstoreController {
 
     }
 
-    //POST mappings
+
     @PostMapping("/new")
     @ResponseBody
     @PreAuthorize("hasRole('USER')")
@@ -81,7 +81,6 @@ public class DrugstoreController {
 
     }
 
-    //PUT mappings
     @PutMapping("/update")
     @ResponseBody
     @PreAuthorize("hasRole('USER')")
@@ -116,16 +115,14 @@ public class DrugstoreController {
 
     @PostMapping("/upload")
     public List<Drugstore> uploadDrugstores(@RequestParam("file") MultipartFile file) throws Exception {
-        Optional<List<DrugstoreDto>> parsedDrugstores = parser.parse(file.getInputStream());
-        if (parsedDrugstores.isPresent()) {
-            List<Drugstore> drugstores = parsedDrugstores.get().stream()
-                    .map(drugstoreMapper::map)
-                    .collect(Collectors.toList());
-            drugstoreRepository.saveAll(drugstores);
+        List<Drugstore> parsedDrugstores = parsingStrategyStorageService.parse(
+                file.getInputStream(), DrugstoreDto.class)
+                .stream()
+                .map(drugstoreMapper::map)
+                .collect(Collectors.toList());
 
-            return drugstores;
-        }
-        return Collections.emptyList();
+        drugstoreRepository.saveAll(parsedDrugstores);
+        return parsedDrugstores;
     }
 
 }

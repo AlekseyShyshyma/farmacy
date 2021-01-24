@@ -1,19 +1,20 @@
-package com.khpi.farmacy.services.excel.importation.dtos;
+package com.khpi.farmacy.dtos;
 
 
 import lombok.*;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class DrugstoreDto {
 
+    private long managerCode;
     private long drugstoreCode;
+
     private String address;
     private String networkTitle;
     private String phoneNumber;
     private String region;
-    private long managerCode;
 }

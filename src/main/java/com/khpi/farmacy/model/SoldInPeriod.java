@@ -1,14 +1,13 @@
 package com.khpi.farmacy.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.time.LocalDate;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -22,10 +21,13 @@ public class SoldInPeriod {
 
     @NonNull
     @Column(name = "period_start")
-    private Date periodStart;
+    private LocalDate periodStart;
+
     @Column(name = "period_end")
-    private Date periodEnd;
+    private LocalDate periodEnd;
+
     private double sum;
+
     private int amount;
 
     //@JsonIgnore
@@ -37,11 +39,4 @@ public class SoldInPeriod {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "medicine_code", nullable = false)
     private Medicine medicine;
-
-    public SoldInPeriod(Long soldId, Date periodStart, Date periodEnd, double sum, int amount) {
-        this.periodStart = periodStart;
-        this.periodEnd = periodEnd;
-        this.sum = sum;
-        this.amount = amount;
-    }
 }
