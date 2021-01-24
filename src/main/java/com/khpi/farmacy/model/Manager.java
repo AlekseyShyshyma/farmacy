@@ -1,18 +1,16 @@
 package com.khpi.farmacy.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "manager")
 public class Manager {
@@ -35,13 +33,13 @@ public class Manager {
 
     @JsonIgnore
     @OneToMany(mappedBy = "manager")
-    private Set<Drugstore> drugstores;
+    private List<Drugstore> drugstores;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles",
         joinColumns = @JoinColumn(name="manager_code"),
         inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles = new HashSet<>();
+    private List<Role> roles = new ArrayList<>();
 
     public Manager(long managerCode, String name, String password, String surname, String patronymic,
                    String address, String phoneNumber, String corporatePhoneNumber, String position) {

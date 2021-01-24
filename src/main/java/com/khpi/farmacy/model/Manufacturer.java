@@ -1,15 +1,13 @@
 package com.khpi.farmacy.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 
 import javax.persistence.*;
-import java.util.Set;
+import java.util.List;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -29,6 +27,6 @@ public class Manufacturer {
 
     @JsonIgnore
     @OneToMany(mappedBy = "manufacturer", orphanRemoval = true)
-    private Set<Medicine> medicines;
+    private List<Medicine> medicines;
 
 }

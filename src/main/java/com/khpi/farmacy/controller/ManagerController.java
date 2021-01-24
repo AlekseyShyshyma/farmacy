@@ -108,7 +108,7 @@ public class ManagerController {
         Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
                 .orElseThrow(() -> new AppException("User Role not set."));
 
-        newManager.setRoles(Collections.singleton(userRole));
+        newManager.setRoles(Collections.singletonList(userRole));
 
         Manager result = managerRepository.save(newManager);
 
@@ -143,12 +143,12 @@ public class ManagerController {
 
     }
 
-    //PUT mappings
     @PutMapping("/update")
     @ResponseBody
     @PreAuthorize("hasRole('USER')")
     public Manager updateManagerById(@RequestParam("managerCode") Long managerId,
                                         @Valid @RequestBody Manager managerDetails) {
+
         Manager manager = managerRepository.findById(managerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Manager", "id", managerId));
 

@@ -1,6 +1,7 @@
 package com.khpi.farmacy.model;
 
 import com.khpi.farmacy.helpers.RoleName;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,6 +14,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class Role {
 
     @Id
@@ -23,9 +25,5 @@ public class Role {
     @NaturalId
     @Column(length = 60)
     private RoleName name;
-
-    public Role(RoleName name) {
-        this.name = name;
-    }
 
 }
