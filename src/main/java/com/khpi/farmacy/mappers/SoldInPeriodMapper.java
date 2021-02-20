@@ -45,4 +45,16 @@ public class SoldInPeriodMapper {
 
         return soldInPeriod;
     }
+
+    public SoldInPeriodDto map(SoldInPeriod soldInPeriod) {
+
+        SoldInPeriodDto soldInPeriodDto = new SoldInPeriodDto();
+        BeanUtils.copyProperties(soldInPeriod, soldInPeriodDto);
+
+        soldInPeriodDto.setDrugstoreCode(soldInPeriod.getDrugstore().getDrugstoreCode());
+        soldInPeriodDto.setMedicineCode(soldInPeriod.getMedicine().getMedicineCode());
+        soldInPeriodDto.setManagerCode(soldInPeriod.getDrugstore().getManager().getManagerCode());
+
+        return soldInPeriodDto;
+    }
 }

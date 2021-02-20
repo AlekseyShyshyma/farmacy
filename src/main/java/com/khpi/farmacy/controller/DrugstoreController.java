@@ -7,6 +7,7 @@ import com.khpi.farmacy.model.Drugstore;
 import com.khpi.farmacy.exception.BadRequestException;
 import com.khpi.farmacy.repositories.DrugstoreRepository;
 import com.khpi.farmacy.repositories.ManagerRepository;
+import com.khpi.farmacy.services.excel.exportation.ExportStrategyStorageService;
 import com.khpi.farmacy.services.excel.importation.ParsingStrategyStorageService;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -36,6 +39,9 @@ public class DrugstoreController {
 
     @Setter(onMethod_ = @Autowired)
     private ParsingStrategyStorageService parsingStrategyStorageService;
+
+    @Setter(onMethod_ = @Autowired)
+    private ExportStrategyStorageService exportStrategyStorageService;
 
 
     @GetMapping("/get")
@@ -123,6 +129,16 @@ public class DrugstoreController {
 
         drugstoreRepository.saveAll(parsedDrugstores);
         return parsedDrugstores;
+    }
+
+    @GetMapping("/export")
+    @ResponseBody
+    public byte[] exportExcel(HttpServletResponse httpServletResponse) throws IOException {
+        List<DrugstoreDto> drugstoreDtos = drugstoreRepository.findAll().stream()
+                .map(drugstoreMapper::map)
+                .collect(Collectors.toList());
+        httpServletResponse.setHeader("Content-Disposition", "attachment; filename=export.xlsx");
+        return exportStrategyStorageService.parse(DrugstoreDto.class, drugstoreDtos);
     }
 
 }

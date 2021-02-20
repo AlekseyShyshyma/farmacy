@@ -34,4 +34,11 @@ public class MedicineMapper {
         }
         return medicine;
     }
+
+    public MedicineDto map(Medicine medicine){
+        MedicineDto medicineDto = new MedicineDto();
+        BeanUtils.copyProperties(medicine, medicineDto);
+        medicineDto.setManufacturerCode(medicine.getManufacturer().getCode());
+        return medicineDto;
+    }
 }

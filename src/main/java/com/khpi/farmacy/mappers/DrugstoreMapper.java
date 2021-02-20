@@ -32,4 +32,11 @@ public class DrugstoreMapper {
         }
         return drugstore;
     }
+
+    public DrugstoreDto map(Drugstore drugstore) {
+
+        DrugstoreDto drugstoreDto = new DrugstoreDto();
+        BeanUtils.copyProperties(drugstore, drugstoreDto);
+        return drugstoreDto;
+    }
 }
