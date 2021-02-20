@@ -77,7 +77,6 @@ public class ManufacturerController {
         manufacturerRepository.delete(manufacturer);
 
         return ResponseEntity.ok().build();
-
     }
 
 }

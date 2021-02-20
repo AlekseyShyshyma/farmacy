@@ -8,7 +8,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DrugstoreDto {
+public class DrugstoreDto implements Dto {
 
     private long managerCode;
     private long drugstoreCode;

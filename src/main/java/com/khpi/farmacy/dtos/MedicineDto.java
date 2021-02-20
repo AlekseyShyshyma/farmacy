@@ -7,7 +7,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MedicineDto {
+public class MedicineDto implements Dto {
 
     private Long medicineCode;
     private Long manufacturerCode;

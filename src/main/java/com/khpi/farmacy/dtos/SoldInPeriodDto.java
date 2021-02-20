@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SoldInPeriodDto {
+public class SoldInPeriodDto implements Dto {
 
     private int amount;
 
