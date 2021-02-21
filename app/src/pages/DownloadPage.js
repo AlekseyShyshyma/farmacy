@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {
     Upload, message, Button, Icon, Row, Col, Select, Form
 } from 'antd';
-import {addRow, getAllDrugstores, getAllMedicines} from '../apiUtils';
+import {addRow, getAllDrugstores, getAllMedicines, downloadFileByUrl} from '../apiUtils';
 import '../styles/DataTable.css';
 
 import '../styles/UploadPage.css';
@@ -94,37 +94,42 @@ class DownloadPage extends Component {
 
         const { drugstores } = this.state;
 
+        function downloadMedicines() {
+            downloadFileByUrl("/api/medicine/export");
+        }
+
+        function downloadDrugstores() {
+            downloadFileByUrl("/api/drugstore/export")
+        }
+
+        function downloadSoldIns() {
+            downloadFileByUrl("/api/sold/export")
+        }
+
         return(
             <div>
                 <Row>
                     <Col span={8}>
                         <div className="upload" style={{height: '100%'}}>
-                            <Upload {...medicineProps}
-                                    style={{height: '5em'}}>
-                                <Button className="downloadButton" style={{height: '5em'}}>
+                                <Button className="downloadButton" style={{height: '5em'}} onClick={downloadMedicines}>
                                     <Icon type="download" /> Download Medicines
                                 </Button>
-                            </Upload>
                         </div>
                     </Col>
 
                     <Col span={8}>
                         <div className="upload">
-                            <Upload {...drugstoreProps}>
-                                <Button className="downloadButton" style={{height: '5em'}}>
+                                <Button className="downloadButton" style={{height: '5em'}} onClick={downloadDrugstores}>
                                     <Icon type="download" /> Download Drugstores
                                 </Button>
-                            </Upload>
                         </div>
                     </Col>
 
                     <Col span={2}>
                         <div className="upload">
-                            <Upload {...props}>
-                                <Button className="downloadButton" style={{height: '5em'}}>
-                                    <Icon type="download" /> Get Next Orders
+                                <Button className="downloadButton" style={{height: '5em'}} onClick={downloadSoldIns}>
+                                    <Icon type="download" /> Download Sold Ins
                                 </Button>
-                            </Upload>
                         </div>
                     </Col>
                     <Col span={4}>
