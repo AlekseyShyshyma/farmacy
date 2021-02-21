@@ -53,4 +53,61 @@ public class Manager {
         this.corporatePhoneNumber = corporatePhoneNumber;
         this.position = position;
     }
+
+    public static class Builder {
+
+        private Manager manager;
+
+        public Builder() {
+            manager = new Manager();
+        }
+        public Builder managerCode(long managerCode) {
+            manager.managerCode = managerCode;
+            return this;
+        }
+
+        public Builder name(String name) {
+            manager.name = name;
+            return this;
+        }
+
+        public Builder password(String password) {
+            manager.password = password;
+            return this;
+        }
+
+        public Builder surname(String surname) {
+            manager.surname = surname;
+            return this;
+        }
+
+        public Builder patronymic(String patronymic) {
+            manager.patronymic = patronymic;
+            return this;
+        }
+
+        public Builder address(String address) {
+            manager.address = address;
+            return this;
+        }
+
+        public Builder phoneNumber(String phoneNumber) {
+            manager.phoneNumber = phoneNumber;
+            return this;
+        }
+
+        public Builder corporatePhoneNumber(String corporatePhoneNumber) {
+            manager.corporatePhoneNumber = corporatePhoneNumber;
+            return this;
+        }
+
+        public Builder position(String position) {
+            manager.position = position;
+            return this;
+        }
+
+        public Manager build() {
+            return manager;
+        }
+    }
 }

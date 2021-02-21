@@ -30,10 +30,10 @@ import java.util.stream.Collectors;
 public class DrugstoreController {
 
     @Setter(onMethod_ = @Autowired)
-    DrugstoreRepository drugstoreRepository;
+    private DrugstoreRepository drugstoreRepository;
 
     @Setter(onMethod_ = @Autowired)
-    ManagerRepository managerRepository;
+    private ManagerRepository managerRepository;
 
     @Setter(onMethod_ = @Autowired)
     private DrugstoreMapper drugstoreMapper;

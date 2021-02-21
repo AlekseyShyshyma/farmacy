@@ -19,7 +19,7 @@ import java.util.List;
 public class ManufacturerController {
 
     @Setter(onMethod_ = @Autowired)
-    ManufacturerRepository manufacturerRepository;
+    private ManufacturerRepository manufacturerRepository;
 
 
     @GetMapping("/get")
@@ -43,7 +43,7 @@ public class ManufacturerController {
     @PreAuthorize("hasRole('USER')")
     public Manufacturer createManufacturer(@Valid @RequestBody Manufacturer manufacturer) {
         boolean ifExists = manufacturerRepository.existsById(manufacturer.getCode());
-        if(ifExists) {
+        if (ifExists) {
             throw new BadRequestException("Manufacturer with this code already exists");
         }
         return manufacturerRepository.save(manufacturer);
@@ -54,7 +54,7 @@ public class ManufacturerController {
     @ResponseBody
     @PreAuthorize("hasRole('USER')")
     public Manufacturer updateManufacturerById(@RequestParam("manufacturerCode") Long manufacturerId,
-                                         @Valid @RequestBody Manufacturer manufacturerDetails) {
+                                               @Valid @RequestBody Manufacturer manufacturerDetails) {
         Manufacturer manufacturer = manufacturerRepository.findById(manufacturerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Manufacturer", "id", manufacturerId));
 
