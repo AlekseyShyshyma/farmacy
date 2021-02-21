@@ -8,19 +8,20 @@ import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
 
-@RestController
+@Controller
 @RequestMapping("/api/manufacturer")
 public class ManufacturerController {
 
     @Setter(onMethod_ = @Autowired)
     ManufacturerRepository manufacturerRepository;
 
-    //GET mappings
+
     @GetMapping("/get")
     @ResponseBody
     @PreAuthorize("hasRole('USER')")
@@ -36,7 +37,7 @@ public class ManufacturerController {
         return manufacturerRepository.findAll();
     }
 
-    //POST mappings
+
     @PostMapping("/new")
     @ResponseBody
     @PreAuthorize("hasRole('USER')")
@@ -48,7 +49,7 @@ public class ManufacturerController {
         return manufacturerRepository.save(manufacturer);
     }
 
-    //PUT mappings
+
     @PutMapping("/update")
     @ResponseBody
     @PreAuthorize("hasRole('USER')")
@@ -75,7 +76,6 @@ public class ManufacturerController {
                 .orElseThrow(() -> new ResourceNotFoundException("Manufacturer", "id", manufacturerId));
 
         manufacturerRepository.delete(manufacturer);
-
         return ResponseEntity.ok().build();
     }
 

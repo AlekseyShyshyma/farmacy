@@ -1,17 +1,20 @@
 package com.khpi.farmacy.controller;
 
+import com.khpi.farmacy.config.security.annotations.CurrentUser;
+import com.khpi.farmacy.config.security.*;
+import com.khpi.farmacy.dtos.LoginEntityDto;
 import com.khpi.farmacy.exception.AppException;
 import com.khpi.farmacy.exception.ResourceNotFoundException;
-import com.khpi.farmacy.helpers.*;
 import com.khpi.farmacy.model.Manager;
-import com.khpi.farmacy.payloads.ManagerCodeAvailability;
-import com.khpi.farmacy.responses.ApiResponse;
-import com.khpi.farmacy.helpers.*;
+import com.khpi.farmacy.dtos.ManagerCodeAvailabilityDto;
+import com.khpi.farmacy.dtos.ApiResponseDto;
 import com.khpi.farmacy.model.Role;
 import com.khpi.farmacy.repositories.ManagerRepository;
 
 import com.khpi.farmacy.repositories.RoleRepository;
-import com.khpi.farmacy.responses.JwtAuthenticationResponse;
+import com.khpi.farmacy.dtos.JwtAuthenticationResponseDto;
+import com.khpi.farmacy.services.jwttoken.JwtTokenService;
+import com.khpi.farmacy.config.security.userdetails.UserDetailsImpl;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +25,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -31,7 +35,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-@RestController
+@Controller
 @RequestMapping("/api/manager")
 public class ManagerController {
 
@@ -48,9 +52,9 @@ public class ManagerController {
     PasswordEncoder passwordEncoder;
 
     @Setter(onMethod_ = @Autowired)
-    JwtTokenProvider tokenProvider;
+    JwtTokenService tokenProvider;
 
-    //GET mappings
+
     @GetMapping("/get")
     @ResponseBody
     @PreAuthorize("hasRole('USER')")
@@ -60,9 +64,10 @@ public class ManagerController {
                 .orElseThrow(() -> new ResourceNotFoundException("Manager", "id", managerId));
     }
 
+    @ResponseBody
     @GetMapping("/me")
     @PreAuthorize("hasRole('USER')")
-    public Manager getCurrentUser(@CurrentUser UserPrincipal currentUser) {
+    public Manager getCurrentUser(@CurrentUser UserDetailsImpl currentUser) {
         Manager userSummary = new Manager(currentUser.getManagerCode(), currentUser.getName(),
                 currentUser.getPassword(), currentUser.getSurname(), currentUser.getPatronymic(),
                 currentUser.getAddress(), currentUser.getPhoneNumber(), currentUser.getCorporatePhoneNumber(), currentUser.getPosition());
@@ -71,9 +76,9 @@ public class ManagerController {
 
     @GetMapping("/checkManagerCodeAvailability")
     @ResponseBody
-    public ManagerCodeAvailability checkManagerCodeAvailability(@RequestParam(value = "managerCode") Long code) {
+    public ManagerCodeAvailabilityDto checkManagerCodeAvailability(@RequestParam(value = "managerCode") Long code) {
         Boolean isAvailable = !managerRepository.existsById(code);
-        return new ManagerCodeAvailability(isAvailable);
+        return new ManagerCodeAvailabilityDto(isAvailable);
     }
 
     @GetMapping("/all")
@@ -82,7 +87,7 @@ public class ManagerController {
         return managerRepository.findAll();
     }
 
-    //POST mappings
+
     @PostMapping("/new")
     @ResponseBody
     public Manager createManager(@Valid @RequestBody Manager manager) {
@@ -94,7 +99,7 @@ public class ManagerController {
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody Manager manager) {
         if(managerRepository.existsById(manager.getManagerCode())) {
-            return new ResponseEntity(new ApiResponse(false, "Username is already taken!"),
+            return new ResponseEntity(new ApiResponseDto(false, "Username is already taken!"),
                     HttpStatus.BAD_REQUEST);
         }
 
@@ -105,7 +110,7 @@ public class ManagerController {
 
         newManager.setPassword(passwordEncoder.encode(manager.getPassword()));
 
-        Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
+        Role userRole = roleRepository.findByName(Roles.ROLE_USER)
                 .orElseThrow(() -> new AppException("User Role not set."));
 
         newManager.setRoles(Collections.singletonList(userRole));
@@ -116,16 +121,16 @@ public class ManagerController {
                 .fromCurrentContextPath().path("/api/manager/{username}")
                 .buildAndExpand(Long.toString(result.getManagerCode())).toUri();
 
-        return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully"));
+        return ResponseEntity.created(location).body(new ApiResponseDto(true, "User registered successfully"));
     }
 
     @PostMapping("/signin")
     @ResponseBody
-    public ResponseEntity<?> loginManager(@Valid @RequestBody LoginEntity loginEntity){
+    public ResponseEntity<?> loginManager(@Valid @RequestBody LoginEntityDto loginEntityDto){
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginEntity.getLogin().toString(),
-                        loginEntity.getPassword()
+                        loginEntityDto.getLogin().toString(),
+                        loginEntityDto.getPassword()
                 )
         );
 
@@ -133,10 +138,10 @@ public class ManagerController {
 
         String jwt = tokenProvider.generateToken(authentication);
 
-        Optional<Manager> manager = managerRepository.findById(loginEntity.getLogin());
+        Optional<Manager> manager = managerRepository.findById(loginEntityDto.getLogin());
 
-        if(passwordEncoder.matches(loginEntity.getPassword(), manager.get().getPassword())) {
-            return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
+        if(passwordEncoder.matches(loginEntityDto.getPassword(), manager.get().getPassword())) {
+            return ResponseEntity.ok(new JwtAuthenticationResponseDto(jwt));
         } else {
             return new ResponseEntity<>("Unauthorised", HttpStatus.UNAUTHORIZED);
         }

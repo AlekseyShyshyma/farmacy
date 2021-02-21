@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,7 +25,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@RestController
+@Controller
 @RequestMapping("/api/drugstore")
 public class DrugstoreController {
 
@@ -106,7 +107,6 @@ public class DrugstoreController {
     }
 
     @DeleteMapping("/delete")
-    @ResponseBody
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> deleteDrugstore(@RequestParam("drugstoreCode") Long drugstoreId) {
 
@@ -119,6 +119,7 @@ public class DrugstoreController {
 
     }
 
+    @ResponseBody
     @PostMapping("/upload")
     public List<Drugstore> uploadDrugstores(@RequestParam("file") MultipartFile file) throws Exception {
         List<Drugstore> parsedDrugstores = parsingStrategyStorageService.parse(

@@ -1,4 +1,4 @@
-package com.khpi.farmacy.payloads;
+package com.khpi.farmacy.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class ManagerCodeAvailability {
+public class ManagerCodeAvailabilityDto implements Dto {
 
     private Boolean available;
 }

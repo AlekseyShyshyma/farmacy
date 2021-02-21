@@ -1,6 +1,6 @@
 package com.khpi.farmacy.model;
 
-import com.khpi.farmacy.helpers.RoleName;
+import com.khpi.farmacy.config.security.Roles;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +24,6 @@ public class Role {
     @Enumerated(EnumType.STRING)
     @NaturalId
     @Column(length = 60)
-    private RoleName name;
+    private Roles name;
 
 }

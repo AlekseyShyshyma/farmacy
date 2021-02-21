@@ -1,4 +1,4 @@
-package com.khpi.farmacy.helpers;
+package com.khpi.farmacy.config.security.jwt;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

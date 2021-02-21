@@ -1,4 +1,4 @@
-package com.khpi.farmacy.responses;
+package com.khpi.farmacy.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,12 +9,12 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class JwtAuthenticationResponse {
+public class JwtAuthenticationResponseDto implements Dto {
 
     private String accessToken;
     private String tokenType = "Bearer";
 
-    public JwtAuthenticationResponse(String accessToken) {
+    public JwtAuthenticationResponseDto(String accessToken) {
         this.accessToken = accessToken;
     }
 }

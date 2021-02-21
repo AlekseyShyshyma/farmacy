@@ -1,4 +1,4 @@
-package com.khpi.farmacy.helpers;
+package com.khpi.farmacy.config.security.annotations;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import java.lang.annotation.*;
