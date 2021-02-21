@@ -8,6 +8,12 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Need for exporting excel format files,
+ * which contains medicine data
+ *
+ * @see ExportStrategyStorageService
+ **/
 @Component("medicineExportStrategy")
 public class MedicineExportStrategy extends AbstractExportService<MedicineDto>{
 

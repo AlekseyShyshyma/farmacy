@@ -9,6 +9,12 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Need for exporting excel format files,
+ * which contains sold in period data
+ *
+ * @see ExportStrategyStorageService
+ **/
 @Component("soldInExportStrategy")
 public class SoldInExportStrategy extends AbstractExportService<SoldInPeriodDto> {
 

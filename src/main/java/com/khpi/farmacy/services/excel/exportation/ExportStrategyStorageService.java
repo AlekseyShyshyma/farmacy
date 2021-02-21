@@ -4,6 +4,7 @@ import com.khpi.farmacy.dtos.DrugstoreDto;
 import com.khpi.farmacy.dtos.Dto;
 import com.khpi.farmacy.dtos.MedicineDto;
 import com.khpi.farmacy.dtos.SoldInPeriodDto;
+import com.khpi.farmacy.exception.StrategyNotFoundException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -55,7 +56,7 @@ public final class ExportStrategyStorageService {
         if (model == SoldInPeriodDto.class) {
             return (AbstractExportService<M>) STRATEGIES_MAP.get(KEY_LIST.get(2));
         }
-        throw new RuntimeException("Unknown Strategy");
+        throw new StrategyNotFoundException("Unknown Strategy");
     }
 
     public <M extends Dto> byte[] parse(Class<M> modelType, List<M> models) throws IOException {

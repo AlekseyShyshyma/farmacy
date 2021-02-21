@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,7 +28,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@RestController
+@Controller
 @RequestMapping("/api/sold")
 public class SoldInPeriodController {
     
@@ -49,7 +50,7 @@ public class SoldInPeriodController {
     @Setter(onMethod_ = @Autowired)
     private ExportStrategyStorageService exportStrategyStorageService;
 
-    //GET mappings
+
     @GetMapping("/get")
     @ResponseBody
     @PreAuthorize("hasRole('USER')")
@@ -75,6 +76,7 @@ public class SoldInPeriodController {
     }
 
 
+    @ResponseBody
     @PostMapping("/upload")
     public List<SoldInPeriod> uploadSoldInPeriod
             (@RequestParam("file") MultipartFile file) throws Exception{
@@ -112,7 +114,7 @@ public class SoldInPeriodController {
         return soldInPeriodRepository.save(soldInPeriod);
     }
 
-    //PUT mappings
+
     @PutMapping("/update")
     @ResponseBody
     @PreAuthorize("hasRole('USER')")

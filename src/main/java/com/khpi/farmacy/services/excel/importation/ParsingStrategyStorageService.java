@@ -3,6 +3,7 @@ package com.khpi.farmacy.services.excel.importation;
 import com.khpi.farmacy.dtos.DrugstoreDto;
 import com.khpi.farmacy.dtos.MedicineDto;
 import com.khpi.farmacy.dtos.SoldInPeriodDto;
+import com.khpi.farmacy.exception.StrategyNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -41,7 +42,7 @@ public final class ParsingStrategyStorageService {
         if (model == SoldInPeriodDto.class) {
             return (AbstractParserService<M>) STRATEGIES_MAP.get(KEY_LIST.get(2));
         }
-        throw new RuntimeException("Unknown Strategy");
+        throw new StrategyNotFoundException("Unknown Strategy");
     }
 
     public <M> List<M> parse(InputStream inputStream, Class<M> model) throws IOException {

@@ -1,4 +1,4 @@
-package com.khpi.farmacy.config;
+package com.khpi.farmacy.config.jpa;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
@@ -23,7 +23,7 @@ import java.util.Map;
 @EnableJpaRepositories(transactionManagerRef = "primaryDatabaseTransactionManager",
         entityManagerFactoryRef = "primaryEntityManagerFactory",
         basePackages = {"com.khpi.farmacy.repositories"})
-public class DatabaseConfig {
+public class PrimaryDatabaseConfig {
 
 
     @Primary

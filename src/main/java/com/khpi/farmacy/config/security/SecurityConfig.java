@@ -1,5 +1,8 @@
-package com.khpi.farmacy.helpers;
+package com.khpi.farmacy.config.security;
 
+import com.khpi.farmacy.config.security.jwt.JwtAuthenticationEntryPoint;
+import com.khpi.farmacy.config.security.jwt.JwtAuthenticationFilter;
+import com.khpi.farmacy.config.security.userdetails.UserDetailsServiceImpl;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -28,7 +31,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Setter(onMethod_ = @Autowired)
-    CustomUserDetailsService customUserDetailsService;
+    UserDetailsServiceImpl userDetailsServiceImpl;
 
     @Setter(onMethod_ = @Autowired)
     private JwtAuthenticationEntryPoint unauthorizedHandler;
@@ -41,7 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         authenticationManagerBuilder
-                .userDetailsService(customUserDetailsService)
+                .userDetailsService(userDetailsServiceImpl)
                 .passwordEncoder(passwordEncoder());
     }
 

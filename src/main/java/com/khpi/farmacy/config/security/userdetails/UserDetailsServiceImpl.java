@@ -1,4 +1,4 @@
-package com.khpi.farmacy.helpers;
+package com.khpi.farmacy.config.security.userdetails;
 
 import com.khpi.farmacy.model.Manager;
 import com.khpi.farmacy.repositories.ManagerRepository;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class CustomUserDetailsService implements UserDetailsService {
+public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Setter (onMethod_ = @Autowired)
     ManagerRepository managerRepository;
@@ -23,7 +23,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() ->
                         new UsernameNotFoundException("User was not found with username: " + username));
 
-        return UserPrincipal.create(manager);
+        return UserDetailsImpl.create(manager);
     }
 
     @Transactional
@@ -32,6 +32,6 @@ public class CustomUserDetailsService implements UserDetailsService {
                 () -> new UsernameNotFoundException("User not found with id: " + code)
         );
 
-        return UserPrincipal.create(manager);
+        return UserDetailsImpl.create(manager);
     }
 }

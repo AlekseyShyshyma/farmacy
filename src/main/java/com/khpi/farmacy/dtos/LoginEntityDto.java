@@ -1,4 +1,4 @@
-package com.khpi.farmacy.helpers;
+package com.khpi.farmacy.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class LoginEntity {
+public class LoginEntityDto implements Dto {
 
     private Long login;
     private String password;

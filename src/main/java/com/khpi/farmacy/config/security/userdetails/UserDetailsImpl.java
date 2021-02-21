@@ -1,4 +1,4 @@
-package com.khpi.farmacy.helpers;
+package com.khpi.farmacy.config.security.userdetails;
 
 import com.khpi.farmacy.model.Manager;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class UserPrincipal implements UserDetails {
+public class UserDetailsImpl implements UserDetails {
 
     private long managerCode;
     private String name;
@@ -24,8 +24,8 @@ public class UserPrincipal implements UserDetails {
 
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserPrincipal(Long id, String name, String password, String surname, String patronymic, String address,
-                String phoneNumber, String corporatePhoneNumber, String position, Collection<? extends GrantedAuthority> authorities) {
+    public UserDetailsImpl(Long id, String name, String password, String surname, String patronymic, String address,
+                           String phoneNumber, String corporatePhoneNumber, String position, Collection<? extends GrantedAuthority> authorities) {
         this.managerCode = id;
         this.name = name;
         this.surname = surname;
@@ -39,12 +39,12 @@ public class UserPrincipal implements UserDetails {
 
     }
 
-    public static UserPrincipal create(Manager user) {
+    public static UserDetailsImpl create(Manager user) {
         List<GrantedAuthority> authorities = user.getRoles().stream().map(role ->
                 new SimpleGrantedAuthority(role.getName().name())
         ).collect(Collectors.toList());
 
-        return new UserPrincipal(
+        return new UserDetailsImpl(
                 user.getManagerCode(),
                 user.getName(),
                 user.getPassword(),
@@ -169,7 +169,7 @@ public class UserPrincipal implements UserDetails {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UserPrincipal that = (UserPrincipal) o;
+        UserDetailsImpl that = (UserDetailsImpl) o;
         return Objects.equals(managerCode, that.managerCode);
     }
 

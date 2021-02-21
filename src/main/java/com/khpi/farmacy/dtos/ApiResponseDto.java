@@ -1,4 +1,4 @@
-package com.khpi.farmacy.responses;
+package com.khpi.farmacy.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 @Getter
-public class ApiResponse {
+public class ApiResponseDto implements Dto {
 
     private Boolean success;
     private String message;
