@@ -1,11 +1,11 @@
-import { API_BASE_URL, ACCESS_TOKEN } from '../constants';
+import {API_BASE_URL, ACCESS_TOKEN} from '../constants';
 
 const request = (options) => {
     const headers = new Headers({
         'Content-Type': 'application/json',
     });
 
-    if(localStorage.getItem(ACCESS_TOKEN)) {
+    if (localStorage.getItem(ACCESS_TOKEN)) {
         headers.append('Authorization', 'Bearer ' + localStorage.getItem(ACCESS_TOKEN))
     }
 
@@ -15,7 +15,7 @@ const request = (options) => {
     return fetch(options.url, options)
         .then(response =>
             response.json().then(json => {
-                if(!response.ok) {
+                if (!response.ok) {
                     return Promise.reject(json);
                 }
                 return json;
@@ -84,7 +84,7 @@ export function getManufacturers() {
 }
 
 export function getCurrentUser() {
-    if(!localStorage.getItem(ACCESS_TOKEN)) {
+    if (!localStorage.getItem(ACCESS_TOKEN)) {
         return Promise.reject("No access token set.");
     }
 
@@ -135,13 +135,13 @@ export function getAllManufacturers(username) {
 
 export function updateRow(payload) {
     console.log(payload);
-    if(payload.drugstoreCode) {
+    if (payload.drugstoreCode) {
         updateDrugstore(payload);
-    } else if(payload.medicineCode) {
+    } else if (payload.medicineCode) {
         updateMedicine(payload)
-    } else if(payload.soldId) {
+    } else if (payload.soldId) {
         updateSoldInPeriod(payload)
-    } else if(payload.code) {
+    } else if (payload.code) {
         updateManufacturer(payload)
     }
 }
@@ -184,13 +184,13 @@ function updateSoldInPeriod(payload) {
 
 export function deleteRow(payload) {
     console.log(payload);
-    if(payload.drugstoreCode) {
+    if (payload.drugstoreCode) {
         deleteDrugstore(payload);
-    } else if(payload.medicineCode) {
+    } else if (payload.medicineCode) {
         deleteMedicine(payload)
-    } else if(payload.soldId) {
+    } else if (payload.soldId) {
         deleteSoldInPeriod(payload)
-    } else if(payload.code) {
+    } else if (payload.code) {
         deleteManufacturer(payload)
     }
 }
@@ -229,13 +229,13 @@ function deleteManufacturer(payload) {
 
 export function addRow(payload) {
     console.log(payload);
-    if(payload.soldId) {
+    if (payload.soldId) {
         return addSoldInPeriod(payload);
-    } else if(payload.drugstoreCode) {
+    } else if (payload.drugstoreCode) {
         return addDrugstore(payload)
-    } else if(payload.medicineCode) {
+    } else if (payload.medicineCode) {
         return addMedicine(payload)
-    } else if(payload.code) {
+    } else if (payload.code) {
         return addManufacturer(payload)
     }
 }
@@ -243,8 +243,8 @@ export function addRow(payload) {
 function addDrugstore(payload) {
     console.log('In adding drugstore: ');
     return request({
-       url: '/api/drugstore/new?managerCode=' + payload.managerCode,
-       method: 'POST',
+        url: '/api/drugstore/new?managerCode=' + payload.managerCode,
+        method: 'POST',
         body: JSON.stringify(payload)
     });
 }
@@ -274,4 +274,27 @@ function addSoldInPeriod(payload) {
         method: 'POST',
         body: JSON.stringify(payload)
     });
+}
+
+
+export function downloadFileByUrl(urlToSend) {
+
+    var req = new XMLHttpRequest();
+    req.open("GET", urlToSend, true);
+
+    if (localStorage.getItem(ACCESS_TOKEN)) {
+        req.setRequestHeader('Authorization', 'Bearer ' + localStorage.getItem(ACCESS_TOKEN))
+    }
+
+    req.responseType = "blob";
+    req.onload = function (event) {
+        var blob = req.response;
+        var fileName = "export.xlsx" //if you have the fileName header available
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = fileName;
+        link.click();
+    };
+
+    req.send();
 }
